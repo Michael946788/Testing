@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tebak Angka</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --card: #f5f5f7;
+    --accent: #6366f1;
+    --border: #e0e0e5;
+    --success: #16a34a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16161a;
+      --fg: #f2f2f5;
+      --card: #232329;
+      --accent: #818cf8;
+      --border: #34343c;
+      --success: #4ade80;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .wrap {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 32px 20px;
+    text-align: center;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  p.sub { color: #888; margin-top: 0; font-size: 0.9rem; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-top: 20px;
+  }
+  input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  button {
+    margin-top: 14px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:active { opacity: 0.85; }
+  button.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg);
+  }
+  #result {
+    margin-top: 16px;
+    font-size: 1.05rem;
+    min-height: 24px;
+  }
+  #history {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #888;
+    word-wrap: break-word;
+  }
+  .win { color: var(--success); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎯 Tebak Angka</h1>
+  <p class="sub">Aku sudah memikirkan angka antara 1–100. Coba tebak!</p>
+
+  <div class="card">
+    <input id="tebakan" type="number" min="1" max="100" placeholder="Masukin angka..." autofocus>
+    <button onclick="cek()">Tebak!</button>
+    <button class="secondary" onclick="mulaiUlang()">🔄 Main Lagi</button>
+
+    <div id="result"></div>
+    <div id="history"></div>
+  </div>
+</div>
+
+<script>
+let rahasia = Math.floor(Math.random() * 100) + 1;
+let percobaan = 0;
+let riwayat = [];
+
+const input = document.getElementById('tebakan');
+const result = document.getElementById('result');
+const history = document.getElementById('history');
+
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') cek();
+});
+
+function cek() {
+  const val = parseInt(input.value, 10);
+  if (!val || val < 1 || val > 100) {
+    result.textContent = 'Masukin angka antara 1-100 ya!';
+    return;
+  }
+  percobaan++;
+  riwayat.push(val);
+  history.textContent = 'Riwayat tebakan: ' + riwayat.join(', ');
+
+  if (val < rahasia) {
+    result.textContent = '📉 Kekecilan! Coba lagi.';
+  } else if (val > rahasia) {
+    result.textContent = '📈 Kebesaran! Coba lagi.';
+  } else {
+    result.innerHTML = `<span class="win">🎉 Bener! Angkanya ${rahasia}, ketebak dalam ${percobaan} kali percobaan!</span>`;
+  }
+  input.value = '';
+  input.focus();
+}
+
+function mulaiUlang() {
+  rahasia = Math.floor(Math.random() * 100) + 1;
+  percobaan = 0;
+  riwayat = [];
+  result.textContent = '';
+  history.textContent = '';
+  input.value = '';
+  input.focus();
+}
+</script>
+</body>
+</html>
